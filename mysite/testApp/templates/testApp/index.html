@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+    var clickHandler = function(e){
+        $.get(
+        "logout.html",
+         function(data){
+            if (data['success']){
+                $('#2').html(data['data'])
+            }else{
+                alert(data['error'])
+            }
+        })}
+    $('#logout').on('click', clickHandler)
+    })
+    </script>
+</head>
+<p id='2'>
+    Welcome! {{username}}
+    <button class='btn btn-primary' type="button" id='logout'> logout</button>
+</p>
+
+fasdfasfasfasfasdfas
+
+<!--</body>-->
+<!--</html>-->
+
+<!--<html>-->
+    <!--<body>-->
+    <!--<div id="container">-->
+
+
+    <!--</div>-->
+    <!--</body>-->
+
+<!--</html>-->
+
+<!--var $=require('jquery')-->
