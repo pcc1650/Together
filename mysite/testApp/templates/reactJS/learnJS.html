@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<title>javascript在线运行平台</title>
+<script type="text/javascript">
+    function outerFunction(base){
+        var punc = "!"
+        return function(ext){
+            return base+ext+punc
+        }
+    }
+
+    var baseString = outerFunction("Hello ")
+    var newString = baseString("World!")
+    alert(newString)
+
+</script>
+</body>
+</html>
