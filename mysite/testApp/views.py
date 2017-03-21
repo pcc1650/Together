@@ -13,11 +13,13 @@ from django.http import HttpResponseRedirect
 from django.http import QueryDict
 import json
 import time
+from django.http import HttpResponseRedirect
 
 
 class MyRegistrationView(View):
     def get(self, request, *args, **kwargs):
-        pass
+        ret = {}
+        return HttpResponse(json.dumps(ret), content_type='application/json')
 
     def post(self, request, *args, **kwargs):
         paras = request.POST
@@ -34,18 +36,20 @@ class MyRegistrationView(View):
         return HttpResponse(json.dumps(ret), content_type='application/json')
 
 
-# class MyLoginView(View):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'testApp/login.html')
+class MyLoginView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'reactJS/webpackHTML.html')
 
 
 class MyIndexView(View):
     def get(self, request, *args, **kwargs):
         # return HttpResponseRedirect('login.html')
-        return render(request, 'reactJS/webpackHTML.html')
+        return HttpResponseRedirect('/testApp/')
 
     def post(self, request, *args, **kwargs):
-        paras = request.POST
+        # request.POST when using JQuery
+        # paras = request.POST
+        paras = json.loads(request.body)
         user = paras['username']
         pwd = paras['password']
         user_login = authenticate(username=user, password=pwd)
@@ -60,10 +64,9 @@ class MyIndexView(View):
             ret['success'] = True
             return HttpResponse(json.dumps(ret), content_type='application/json')
         else:
-            ret['test'] = 'test!'
             ret['error'] = 'The username or password is wrong!'
             ret['success'] = False
-            return HttpResponse(json.dumps(ret), content_type='application/json')
+            return HttpResponse(json.dumps(ret), content_type='application/json', status=401)
 
 
 class MyLogoutView(View):
@@ -89,17 +92,16 @@ class MycheckLoginStateView(View):
         if request.user.is_authenticated():
             ret['logined'] = True
             ret['user'] = request.user.username
-            postData = {}
-            all_entries = Invitation.objects.all()
+            postdata = list()
+            all_entries = Invitation.objects.all().order_by('-id')
             for e in all_entries:
                 temp = dict()
                 temp['pk'] = e.pk
                 temp['title'] = e.title
                 temp['content'] = e.description
                 temp['author'] = e.author
-                postData[temp['pk']] = temp
-            ret['postData'] = postData
-            print ret['postData']
+                postdata.append(temp)
+            ret['postData'] = postdata
             return HttpResponse(json.dumps(ret), content_type='application/json')
         else:
             ret['logined'] = False
@@ -108,22 +110,25 @@ class MycheckLoginStateView(View):
 
 class MyPostView(View):
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect("/testApp/")
         ret = dict()
-        postData = dict()
-        all_entries = Invitation.objects.all()
+        postdata = list()
+        # all_entries = Invitation.objects.all().order_by('-id')
+        all_entries = Invitation.objects.all().order_by('-id')
         for e in all_entries:
             temp = dict()
             temp['pk'] = e.pk
             temp['title'] = e.title
             temp['content'] = e.description
             temp['author'] = e.author
-            postData[temp['pk']] = temp
-        ret['postData'] = postData
+            postdata.append(temp)
+        ret['postData'] = postdata
         # time.sleep(10)
         return HttpResponse(json.dumps(ret), content_type='application/json')
 
     def post(self, request, *args, **kwargs):
-        paras = request.POST
+        paras = json.loads(request.body)
         title = paras['Title']
         contents = paras['Content']
         author = paras['Author']
@@ -137,7 +142,6 @@ class MyPostView(View):
         paras = QueryDict(request.body)
         title = paras['Title']
         content = paras['Content']
-        print title, content, id
         post = Invitation.objects.get(pk=id)
         post.title = title
         post.description = content
@@ -173,10 +177,10 @@ class MyPostView(View):
 class MySearchView(View):
     def post(self, request, *args, **kwargs):
         ret = dict()
-        search_ret = dict()
+        search_ret = list()
         paras = request.POST
         searchContent = paras['search']
-        search_entries = Invitation.objects.filter(Q(title__icontains=searchContent) | Q(description__icontains=searchContent))
+        search_entries = Invitation.objects.filter(Q(title__icontains=searchContent) | Q(description__icontains=searchContent)).order_by('-id')
         if search_entries:
             ret['success'] = True
         else:
@@ -187,17 +191,19 @@ class MySearchView(View):
             temp['title'] = e.title
             temp['content'] = e.description
             temp['author'] = e.author
-            search_ret[temp['pk']] = temp
+            search_ret.append(temp)
         ret['searchResult'] = search_ret
         return HttpResponse(json.dumps(ret), content_type='application/json')
 
 
 class MyManageView(View):
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect("/testApp/")
         ret = dict()
-        myPosts_ret = dict()
+        myPosts_ret = list()
         user = request.user
-        search_entries = Invitation.objects.filter(author=user)
+        search_entries = Invitation.objects.filter(author=user).order_by('-id')
         if search_entries:
             ret['success'] = True
             for e in search_entries:
@@ -206,8 +212,9 @@ class MyManageView(View):
                 temp['title'] = e.title
                 temp['content'] = e.description
                 temp['author'] = e.author
-                myPosts_ret[temp['pk']] = temp
+                myPosts_ret.append(temp)
             ret['myPostsData'] = myPosts_ret
+            print myPosts_ret
         else:
             ret['success'] = False
             ret['error'] = 'No matching result!'

@@ -1,0 +1,25 @@
+.banner{
+  top: 0;
+  height: 50px;
+  width: 1280px;
+  background-color: #24292e;
+  position: fixed;
+}
+.banner a:hover{
+  color: #baab99;
+  text-decoration:none;
+}
+.banner .aremain{
+  cursor: pointer; 
+  margin: 10px 10px;
+  font-size: 1.4em;
+  color: white;
+  display: inline-block;
+}
+.afirst{
+  cursor: pointer;
+  margin-left:50px;
+  margin-right:10px;
+  font-size: 1.4em;
+  color: white; 
+}

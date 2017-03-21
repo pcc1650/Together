@@ -3,9 +3,9 @@ import {Modal, Button} from "react-bootstrap"
 import React from "react"
 import ReactDOM from "react-dom"
 import 'bootstrap/dist/css/bootstrap.min.css'
+import {store} from './ReduxStore.jsx'
 
-
-var store = {username: "",postData: {}};
+console.log(store)
 
 var RootComponent = React.createClass({
   componentWillMount: function(){
@@ -14,7 +14,7 @@ var RootComponent = React.createClass({
     "checkLoginState",
      function(data){
         if (data['logined']){
-          store['username'] = data['user']
+          store.dispatch({type: 'writeUsername', payload: data['user']})
           console.log('has logined before')
           self.props.router.push('/index')
         }else{
@@ -36,8 +36,8 @@ var IndexComponent = React.createClass({
     $.get(
     "post",
      function(data){
-        store['postData'] = data['postData']
-        self.setState({dataReady: true})
+       store.dispatch({'type': 'writePostData', payload: data['postData']})
+       self.setState({dataReady: true})
     })
   },
   dataReadyFunc: function(){
@@ -51,7 +51,7 @@ var IndexComponent = React.createClass({
           <th>Author</th>
         </tr>
         {
-          Object.values(store['postData']).map(function(temp){
+          Object.values(store.getState()['postData']).map(function(temp){
             return (
               <tr key={temp['pk']}>
                 <td>{temp['pk']}</td>
@@ -81,7 +81,7 @@ var IndexComponent = React.createClass({
      function(data){
         if (data['success']){
             alert("Logout successfully!")
-            store['username'] = ''
+            store.dispatch({type: 'writeUsername', payload:''})
             self.props.router.push('/')
         }else{
             alert(data['error'])
@@ -101,7 +101,7 @@ var IndexComponent = React.createClass({
     this.props.router.push('/manage')
   },
   render: function(){
-    var text = 'Hello ' + store['username']
+    var text = 'Hello ' + store.getState()['username']
     if(this.state.dataReady){
       var func1=this.dataReadyFunc
     }
@@ -149,13 +149,18 @@ var LoginComponent = React.createClass({
     },
     function(data){
       if (data['success']){
-        store['username'] = data['username']
+        store.store.dispatch({type: 'writeUsername', payload: data['username']})
         self.props.router.push('/index')
       }
       else{
         alert(data['error'])
       }
     })
+  },
+  testHandler: function(e){
+    e.preventDefault()
+    store.dispatch({type: 'ADD', payload: 5})
+    alert(store.getState()['count'])
   },
   getCookie: function(name) {
     var cookieValue = "";
@@ -188,6 +193,7 @@ var LoginComponent = React.createClass({
           <input className='btn btn-primary' type="submit" value="Login" id='submit'/>
         </form>
         <a className='btn btn-primary' href="#/register"> Register</a>
+        <p className='btn btn-primary' type="button" onClick={this.testHandler}>Test</p>
       </div>
       )
     }
@@ -299,7 +305,7 @@ var PostComponent = React.createClass({
             Content: <textarea  name="content"  id="co"/>
           </p>
           <p>
-            Author: <input readOnly type="text" name="author" id="au" defaultValue= {store['username']} />
+            Author: <input readOnly type="text" name="author" id="au" defaultValue= {store.getState()['username']} />
           </p>
           <p>
           <input type="hidden" name="csrfmiddlewaretoken" id="cs" value= {csrftoken} />
@@ -314,7 +320,7 @@ var PostComponent = React.createClass({
 
 var SearchComponent = React.createClass({
   getInitialState: function(){
-    return {searchDataReturn: true, searchResult: store['postData']}
+    return {searchDataReturn: true, searchResult: store.getState()['postData']}
   },
   dataReturnFunc: function(){
     return(
@@ -584,7 +590,7 @@ var ManageComponent = React.createClass({
               Content: <textarea  name="content"  id="co" defaultValue= {this.state.singlePost['content']}/>
             </p>
             <p>
-              Author: <input readOnly type="text" name="author" id="au" defaultValue= {store['username']} />
+              Author: <input readOnly type="text" name="author" id="au" defaultValue= {store.getState()['username']} />
             <input type="hidden" name="userid" id="id" value= {this.state.singlePost['pk']} />
               <input type="hidden" name="csrfmiddlewaretoken" id="cs" value= {csrftoken} />
             </p>
@@ -599,7 +605,6 @@ var ManageComponent = React.createClass({
     )
   }
 })
-
 
 
 // var login = React.createClass({

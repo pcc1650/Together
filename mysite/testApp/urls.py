@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    url(r'^$', views.MyIndexView.as_view()),
+    url(r'^$', views.MyLoginView.as_view()),
     url(r'^index', views.MyIndexView.as_view()),
     url(r'^register', views.MyRegistrationView.as_view()),
     url(r'^logout', views.MyLogoutView.as_view()),
