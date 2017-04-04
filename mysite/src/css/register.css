@@ -1,0 +1,53 @@
+.wrapper{
+  width: 1280px;
+}
+.registerClass{
+  padding: 10px;
+  margin: 50px;
+  background-color: #EEE;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 5px;
+}
+
+.registerClass #submit{
+  margin-right: 5px;
+}
+
+.registerClass #register{
+  float: left;
+  height: 500px;
+}
+
+.registerClass #intro{
+  margin-right: 5px;
+  height: 500px;
+  margin-left: 500px;
+}
+
+
+.registerClass .pinput{
+	margin-top:30px;
+}
+
+
+.registerClass #intro h2{
+	text-align: center;
+}
+
+
+.registerClass ul{
+	/*list-style-image: url(/testApp/static/tick.jpeg);*/ 
+	list-style-type: square; 
+	font-size: 25px;
+}
+
+.registerClass .basketball{
+	background-image: url(/testApp/static/basketball.jpeg);
+	width: 30%;
+	height: 30%;
+}
+
+.registerClass img{
+	padding-right: 15px;
+}
